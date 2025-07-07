@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <title>Admin Page</title>
+  <style>
+    body.dark-mode {
+      background-color: #121212;
+      color: #ffffff;
+    }
+    body.dark-mode .table,
+    body.dark-mode .form-control,
+    body.dark-mode .form-select {
+      background-color: #1e1e1e;
+      color: white;
+      border-color: #444;
+    }
+    .time-display {
+      font-weight: bold;
+    }
+    #signupForm {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-3">
+    <!-- 시간 / 다크모드 / 성별 / 회원가입 -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div class="time-display" id="currentTime"></div>
+      <button class="btn btn-dark" id="toggleDarkMode">🌙 다크모드</button>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <select class="form-select" id="genderSelect">
+          <option selected disabled>성별을 선택하세요</option>
+          <option value="male">남자</option>
+          <option value="female">여자</option>
+          <option value="none">선택 안함</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <button class="btn btn-outline-primary" id="showSignupBtn">회원 가입</button>
+      </div>
+    </div>
+
+    <!-- 회원 가입 폼 -->
+    <div id="signupForm" class="border p-4 mb-4">
+      <h5>회원 가입</h5>
+      <div class="mb-2">
+        <input type="text" class="form-control" placeholder="이름을 입력하세요" />
+      </div>
+      <div class="mb-2">
+        <input type="email" class="form-control" placeholder="이메일을 입력하세요" />
+      </div>
+      <div class="mb-2">
+        <input type="password" class="form-control" placeholder="비밀번호" />
+      </div>
+      <button class="btn btn-success">가입하기</button>
+    </div>
+
+    <!-- 상품 검색 섹션 -->
+    <h3 class="mb-3">신규 등록 상품</h3>
+    <form class="row row-cols-lg-auto g-3 align-items-center">      
+      <div class="col-12">
+        <select class="form-select" name="category_data_table">
+          <option selected disabled>카테고리를 선택하세요</option>
+          <option value="상의">상의</option>
+          <option value="하의">하의</option>
+          <option value="신발">신발</option>
+          <option value="패션잡화">패션잡화</option>
+        </select>
+      </div>
+      <div class="col-3">
+        <input type="text" class="form-control" placeholder="제품명을 입력해주세요" />
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-primary">조회</button>
+      </div>
+    </form>
+
+    <!-- 테이블 -->
+    <div class="container mt-3">
+      <table class="table table-sm table-bordered">
+        <thead class="table-light">
+          <tr>
+            <th>카테고리</th>
+            <th>브랜드</th>
+            <th>상품명</th>
+            <th>가격</th>
+          </tr>
+        </thead>
+        <tbody id="product_data_Table"></tbody>
+      </table>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <nav>
+      <ul class="pagination justify-content-center">
+        <li class="page-item disabled"><a class="page-link" href="#">이전</a></li>
+        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item"><a class="page-link" href="#">다음</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <!-- 스크립트 -->
+  <script>
+    // 실시간 시간 표시
+    function updateTime() {
+      const now = new Date();
+      const timeStr = now.toLocaleString('ko-KR');
+      document.getElementById('currentTime').innerText = '현재 시각: ' + timeStr;
+    }
+    setInterval(updateTime, 1000);
+    updateTime();
+
+    // 다크모드 토글
+    document.getElementById('toggleDarkMode').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+    });
+
+    // 회원가입 폼 toggle
+    document.getElementById('showSignupBtn').addEventListener('click', () => {
+      const form = document.getElementById('signupForm');
+      form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    });
+
+    // 상품 데이터
+   const product_data = [
+  { category: "상의", brand: 'Supreme', product: '슈프림 박스로고 후드티', price: '390,000' },
+  { category: "하의", brand: 'DIESEL', product: '디젤 트랙 팬츠', price: '188,000' },
+  { category: "신발", brand: 'Nike', product: '에어포스 1', price: '137,000' },
+  { category: "패션잡화", brand: 'Music&Goods', product: '빵빵이 키링', price: '29,000' }, // ← 쉼표 추가
+  { category: "상의", brand: 'cucci', product: '[T56]구찌 819356Z7AM2 남성 의류 셔츠 캐주얼셔츠 남방 GUCCI', price: '2,348,600' }
+];
+    // 테이블에 제품 출력
+    const product_data_Table = document.getElementById('product_data_Table');
+    product_data.forEach(item => {
+      const row = product_data_Table.insertRow();
+      row.insertCell(0).innerText = item.category;
+      row.insertCell(1).innerText = item.brand;
+      row.insertCell(2).innerText = item.product;
+      row.insertCell(3).innerText = item.price;
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
